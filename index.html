@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Day Terms Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            gap: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-height: 90vh;
+        }
+
+        .sidebar {
+            width: 420px;
+            background: #f8f9fa;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .sidebar h2 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .config-section {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .config-section h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .tier-section {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .tier-section h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 3px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-copy {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #218838;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-btn {
+            padding: 10px 15px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: #666;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .output-area {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #333;
+        }
+
+        .output-area.empty {
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .copy-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+            font-size: 13px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Configuration -->
+        <div class="sidebar">
+            <h2>⚙️ Configuration</h2>
+
+            <!-- Basic Settings -->
+            <div class="config-section">
+                <h3>Event Settings</h3>
+                <div class="form-group">
+                    <label>Event Date (YYYY-MM)</label>
+                    <input type="text" id="eventDate" value="2026-05" placeholder="e.g., 2026-05">
+                </div>
+                <div class="form-group">
+                    <label>Event Day</label>
+                    <input type="number" id="eventDay" value="27" min="1" max="31">
+                </div>
+                <div class="form-group">
+                    <label>Region</label>
+                    <input type="text" id="region" value="Singapore">
+                </div>
+            </div>
+
+            <!-- Rebate Settings -->
+            <div class="config-section">
+                <h3>Rebate Settings</h3>
+                <div class="form-group">
+                    <label>Rebate Rate (%)</label>
+                    <input type="number" id="rebateRate" value="5" min="0" max="100" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Rebate Cap (Coins)</label>
+                    <input type="number" id="rebateCap" value="500" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Coin Exchange Rate (100 coins = S$)</label>
+                    <input type="number" id="coinRate" value="1.28" min="0.1" step="0.01">
+                </div>
+            </div>
+
+            <!-- Time Settings -->
+            <div class="config-section">
+                <h3>Time Settings</h3>
+                <div class="form-group">
+                    <label>Promo Code Delivery Hours</label>
+                    <input type="number" id="deliveryHours" value="2" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Flight Payout Days</label>
+                    <input type="number" id="flightPayoutDays" value="3" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Hotel Payout Days (Min-Max)</label>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <input type="number" id="hotelPayoutMin" value="2" min="0">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="hotelPayoutMax" value="6" min="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Coins Validity (Days)</label>
+                    <input type="number" id="validityDays" value="90" min="0">
+                </div>
+            </div>
+
+            <!-- Member Tiers -->
+            <div class="config-section">
+                <h3>Member Tiers</h3>
+            </div>
+
+            <div class="tier-section">
+                <h4>🖤 Black Diamond</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Coins</label>
+                        <input type="number" id="tier_bd_coins" value="400" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Code Value</label>
+                        <input type="text" id="tier_bd_value" value="80">
+                    </div>
+                    <div class="form-group">
+                        <label>Quota</label>
+                        <input type="number" id="tier_bd_quota" value="3" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h4>💎 Diamond+</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Coins</label>
+                        <input type="number" id="tier_dp_coins" value="380" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Code Value</label>
+                        <input type="text" id="tier_dp_value" value="60">
+                    </div>
+                    <div class="form-group">
+                        <label>Quota</label>
+                        <input type="number" id="tier_dp_quota" value="10" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h4>💍 Diamond</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Coins</label>
+                        <input type="number" id="tier_d_coins" value="300" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Code Value</label>
+                        <input type="text" id="tier_d_value" value="40">
+                    </div>
+                    <div class="form-group">
+                        <label>Quota</label>
+                        <input type="number" id="tier_d_quota" value="20" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h4>👑 Platinum</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Coins</label>
+                        <input type="number" id="tier_pt_coins" value="100" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Code Value</label>
+                        <input type="text" id="tier_pt_value" value="25">
+                    </div>
+                    <div class="form-group">
+                        <label>Quota</label>
+                        <input type="number" id="tier_pt_quota" value="30" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h4>🏆 Gold</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Coins</label>
+                        <input type="number" id="tier_g_coins" value="80" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Code Value</label>
+                        <input type="text" id="tier_g_value" value="15">
+                    </div>
+                    <div class="form-group">
+                        <label>Quota</label>
+                        <input type="number" id="tier_g_quota" value="40" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-section">
+                <h4>⭐ Silver</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Coins</label>
+                        <input type="number" id="tier_s_coins" value="50" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Code Value</label>
+                        <input type="text" id="tier_s_value" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label>Quota</label>
+                        <input type="number" id="tier_s_quota" value="50" min="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="toolbar">
+                <button class="btn btn-primary" onclick="generateTerms()">Generate Terms</button>
+                <button class="btn btn-copy" onclick="copyAllTerms()">Copy All with Numbers</button>
+                <button class="btn btn-copy" onclick="copySection1()">Copy Section 1</button>
+                <button class="btn btn-copy" onclick="copySection2()">Copy Section 2</button>
+                <button class="btn btn-copy" onclick="copySection3()">Copy Section 3</button>
+                <button class="btn btn-secondary" onclick="clearOutput()">Clear</button>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('all')">All Sections</button>
+                <button class="tab-btn" onclick="switchTab('section1')">Section 1: Coupon Redemption</button>
+                <button class="tab-btn" onclick="switchTab('section2')">Section 2: Coins Rebate</button>
+                <button class="tab-btn" onclick="switchTab('section3')">Section 3: General</button>
+            </div>
+
+            <div class="output-area empty" id="outputArea">
+                Click "Generate Terms" to create your conditions
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTerms = {
+            all: '',
+            section1: '',
+            section2: '',
+            section3: ''
+        };
+
+        // 货币映射表
+        const regionCurrencyMap = {
+            'Singapore': 'S$',
+            'Malaysia': 'RM',
+            'Indonesia': 'Rp',
+            'Thailand': 'THB',
+            'Vietnam': 'VND',
+            'Philippines': 'PHP',
+            'Hong Kong': 'HK$',
+            'Taiwan': 'NT$'
+        };
+
+        function getCurrencySymbol(region) {
+            return regionCurrencyMap[region] || 'S$';
+        }
+
+        function getEventDate() {
+            const dateInput = document.getElementById('eventDate').value; // YYYY-MM
+            const dayInput = parseInt(document.getElementById('eventDay').value);
+            if (!dateInput || !dayInput) return '27 May 2026';
+
+            const [year, month] = dateInput.split('-');
+            const date = new Date(year, parseInt(month) - 1, dayInput);
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                             'July', 'August', 'September', 'October', 'November', 'December'];
+            return `${dayInput} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+        }
+
+        function getTravelEndDate() {
+            const dateInput = document.getElementById('eventDate').value;
+            const dayInput = parseInt(document.getElementById('eventDay').value);
+            if (!dateInput || !dayInput) return '30 November 2026';
+
+            const [year, month] = dateInput.split('-');
+            const startDate = new Date(year, parseInt(month) - 1, dayInput);
+            const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 6, 0); // Last day of 6th month
+
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                             'July', 'August', 'September', 'October', 'November', 'December'];
+            return `${endDate.getDate()} ${monthNames[endDate.getMonth()]} ${endDate.getFullYear()}`;
+        }
+
+        function getTiersFromInput() {
+            return [
+                {
+                    name: 'Black Diamond',
+                    time: '10 AM',
+                    coins: parseInt(document.getElementById('tier_bd_coins').value) || 400,
+                    value: document.getElementById('tier_bd_value').value || 'S$80',
+                    type: 'Flight',
+                    quota: parseInt(document.getElementById('tier_bd_quota').value) || 3
+                },
+                {
+                    name: 'Diamond+',
+                    time: '10 AM',
+                    coins: parseInt(document.getElementById('tier_dp_coins').value) || 380,
+                    value: document.getElementById('tier_dp_value').value || 'S$60',
+                    type: 'Flight',
+                    quota: parseInt(document.getElementById('tier_dp_quota').value) || 10
+                },
+                {
+                    name: 'Silver',
+                    time: '10 AM',
+                    coins: parseInt(document.getElementById('tier_s_coins').value) || 50,
+                    value: document.getElementById('tier_s_value').value || 'S$10',
+                    type: 'Flight',
+                    quota: parseInt(document.getElementById('tier_s_quota').value) || 50
+                },
+                {
+                    name: 'Diamond',
+                    time: '12 PM',
+                    coins: parseInt(document.getElementById('tier_d_coins').value) || 300,
+                    value: document.getElementById('tier_d_value').value || 'S$40',
+                    type: 'Flight',
+                    quota: parseInt(document.getElementById('tier_d_quota').value) || 20
+                },
+                {
+                    name: 'Platinum',
+                    time: '10 PM',
+                    coins: parseInt(document.getElementById('tier_pt_coins').value) || 100,
+                    value: document.getElementById('tier_pt_value').value || 'S$25',
+                    type: 'Hotel',
+                    quota: parseInt(document.getElementById('tier_pt_quota').value) || 30
+                },
+                {
+                    name: 'Gold',
+                    time: '10 PM',
+                    coins: parseInt(document.getElementById('tier_g_coins').value) || 80,
+                    value: document.getElementById('tier_g_value').value || 'S$15',
+                    type: 'Flight',
+                    quota: parseInt(document.getElementById('tier_g_quota').value) || 40
+                }
+            ];
+        }
+
+        function generateSection1() {
+            const eventDate = getEventDate();
+            const region = document.getElementById('region').value || 'Singapore';
+            const currency = getCurrencySymbol(region);
+            const tiers = getTiersFromInput();
+
+            // 替换所有会员等级的值中的货币符号
+            tiers.forEach(tier => {
+                const amount = tier.value;
+                tier.value = currency + amount;
+            });
+
+            // Group by time slot
+            const times = ['10 AM', '12 PM', '10 PM'];
+            const tiersByTime = {};
+            times.forEach(t => tiersByTime[t] = []);
+            tiers.forEach(tier => {
+                if (tiersByTime[tier.time]) {
+                    tiersByTime[tier.time].push(tier);
+                }
+            });
+
+            let section1 = `【Redeem Trip Coins to get promo codes - Terms】
+
+1. During the promotion period, 10AM/12PM/10PM ${eventDate}, Trip.com members can sign into Trip.com and participate in our 'Redeem Travel Products with Trip Coins' promotion
+2. Promotion platform: Trip.com ${region} app only.
+3. You may exchange your Trip Coins for the following products:
+3.1 10 AM ${eventDate}: `;
+
+            tiersByTime['10 AM'].forEach((tier, idx) => {
+                section1 += `${tier.coins} Trip Coins for a ${tier.value} ${tier.type} Promo Code, for ${tier.name} members and above, total quota is limited to ${tier.quota}`;
+                if (idx < tiersByTime['10 AM'].length - 1) section1 += '; ';
+            });
+            section1 += `;
+3.2 12 PM ${eventDate}: `;
+
+            tiersByTime['12 PM'].forEach((tier, idx) => {
+                section1 += `${tier.coins} Trip Coins for a ${tier.value} ${tier.type} Promo Code, for ${tier.name} members and above, total quota is limited to ${tier.quota}`;
+                if (idx < tiersByTime['12 PM'].length - 1) section1 += '; ';
+            });
+            section1 += `;
+3.3 10 PM ${eventDate}: `;
+
+            tiersByTime['10 PM'].forEach((tier, idx) => {
+                section1 += `${tier.coins} Trip Coins for a ${tier.value} ${tier.type} Promo Code, for ${tier.name} members and above, total quota is limited to ${tier.quota}`;
+                if (idx < tiersByTime['10 PM'].length - 1) section1 += '; ';
+            });
+
+            section1 += `;
+4. The quantity of offers under this promotion is limited and will be served on a first-come, first-served basis. Due to the limited quantity, the travel product you want to exchange through this promotion may become unavailable.
+5. Members can participate in one or more applicable time slot(s) of the Trip Coins for Travel Products promotion
+6. Each Trip.com member can participate in Trip Coins for Travel Products only once per each time slot. (To avoid any misunderstandings, device number, phone number and payment account will be used to determine whether it is the same member.)
+7. When you have successfully exchanged your Trip Coins for travel products, a promo code will be automatically issued to your account. Please go to "Account" - "Promo Codes" to view details and use. As for Free VIP Lounge Access, it will be automatically issued to your account and the remaining times of the reward will be increased by 1 time; please go to "Account" - "Member" to view details and use. If you do not receive promo code / rewards within ${document.getElementById('deliveryHours').value} hours after you redeem it, please contact customer support and provide your contact information.
+8. The expiry date and terms and conditions for different travel products may vary. Please check the expiry date and terms and conditions for the specific travel products carefully when you receive them.
+9. The process for redeeming travel products may vary. Please also check the details on the respective webpage carefully.`;
+
+            return section1;
+        }
+
+        function generateSection2() {
+            const eventDate = getEventDate();
+            const endDate = getTravelEndDate();
+            const region = document.getElementById('region').value || 'Singapore';
+            const currency = getCurrencySymbol(region);
+            const rebateRate = (parseFloat(document.getElementById('rebateRate').value) || 5) / 100;
+            const coinRate = parseFloat(document.getElementById('coinRate').value) || 1.28;
+            const rebateCap = parseInt(document.getElementById('rebateCap').value) || 500;
+            const flightDays = parseInt(document.getElementById('flightPayoutDays').value) || 3;
+            const hotelMin = parseInt(document.getElementById('hotelPayoutMin').value) || 2;
+            const hotelMax = parseInt(document.getElementById('hotelPayoutMax').value) || 6;
+            const validityDays = parseInt(document.getElementById('validityDays').value) || 90;
+
+            const rebatePercent = (rebateRate * 100).toFixed(0);
+            const exampleCoins = Math.round((rebateRate / (coinRate / 100)) * 100);
+
+            let section2 = `【Flights or Hotels Rebate - Terms】
+
+1. Promotion period: ${eventDate}, 00:00 - 23:59 (GMT+8), Travel period: From 00:00 on ${eventDate} to 23:59 on ${endDate} (logic: last day of the 6th month after ${eventDate}) (GMT+8).
+2. Promotion platform: Trip.com ${region} app only.
+3. 【How to Participate】Participation is open to Trip.com members. Please signed in Trip.com by App platform (if you have not registered in Trip.com, please register as a Trip.com member first), Members must click on "Participate Now" first and then complete their booking (by App or Trip.com website) to earn extra Trip Coins rebate. The bookings placed before you click "Participate Now" will not be eligible for this rebate promotion. Please note that this rebate promotion is not applicable to flight-and-hotel packages or orders paid at the hotel (Pay-at-Hotel orders).
+4. 【Trip Coins reward amount】You will receive ${rebatePercent}% rebate Trip Coins — valued at ${rebatePercent}% of your booking amount (the amount after payment, rather than the amount before payment). The amount of Trip Coins earned will be calculated according to the final payment for the booking (the final payment amount is the amount paid after discounts, promo codes, and Trip Coins discounts have been applied). The amount discounted using Trip Coins or paid with a gift card does not count as part of the final payment amount. No Trip Coins will be earned for the amount discounted using Trip Coins. The value of Trip Coins you will receive= Booking amount (after payment) * rebate rate ${rebatePercent}%. For example, if you spend ${currency} 100 on hotels/flights, you will earn ≈ ${exampleCoins} Trip Coins valued at ${currency}100 * ${rebatePercent}%. The final amount of the Trip Coins is subject to real-time exchange rates and limited to ${rebateCap} Trip Coins for each customer.
+5. 【Trip Coins Reward Rules】Member's Coins are extra rewards outside the Standard Trip Coins. For more information on Standard Trip Coins, please go to [https://sg.trip.com/customer/loyalty] There is no limit on the number of bookings, and each eligible booking will earn Trip Coins valued at ${rebatePercent}% of the order amount. The maximum amount of extra Trip Coins each user can get is ${rebateCap} Trip Coins. If you cancel or refund a booking, the rewards obtained will be deducted or invalidated. All Trip coins are rewarded on first-come-first-served basis, subject to availability.
+6. 【When will Trip Coins be issued】Member's Trip Coins will be deposited at the same time when the order's Standard Trip Coins is deposited:
+7. For flight bookings, Trip Coins will be deposited to your account within ${flightDays} days after your departure date. If your booking includes more than one flight, Trip Coins will be deposited to your account within ${flightDays} days after the departure date of the last flight on your booking. For some non-cancellable flight bookings, Trip Coins will be deposited soon after payment. For hotel bookings, Trip Coins will be deposited to your account within ${hotelMin}-${hotelMax} weeks after check-in has been confirmed; especially for Pay-at-Hotel orders, Pay at hotel bookings are not eligible for this ${rebatePercent}% Trip Coins rebate.
+8. 【How to check your eligible bookings and Trip Coins you will get】
+8.1 Step 1: Check the booking progress bar on the campaign page. The number of extra Trip Coins you will receive is displayed in a bubble.
+8.2 Step 2: If you want to check specific eligible booking details, please go to "Account" in the Trip.com app and tap the Trip Coins logo. Then select "History". A note saying "You will receive extra rewards" will display beside eligible bookings. Please note that the number of Trip Coins shown beside this note is the number of standard Trip Coins you will receive.
+9. 【Validity period of rewards】Trip Coins earned through this Promotion by Trip.com members are valid for ${validityDays} days from the time they are claimed.
+10. Trip.com will use information related to the user's Trip.com account (including but not limited to user ID, device number, mobile number, contact person, and payment account) to determine whether the user has already participated in this promotion for the upper limit.
+11. For exact details regarding the rewards available to members, please refer to the promotion page. Trip.com reserves all rights of final interpretation for these terms and conditions. In addition, Trip.com reserves the right to revoke or withdraw the rewards of any user who violates the rules of this promotion.`;
+
+            return section2;
+        }
+
+        function generateSection3() {
+            let section3 = `【Trip.com Exclusive Member Day - Terms】
+
+1. This promotion is organized by Trip.com Travel Singapore Pte. Ltd. ("Trip.com," "our," or "we"). You should carefully read the terms and conditions of this promotion before deciding to participate, as by participating in this promotion, you are acknowledging that you agree to these terms and conditions. Before participating, ensure you have fully read and agree to the terms of this event, our general Terms &Conditions and Privacy Statement [https://pages.trip.com/service-guideline/privacy-policy-en-sg.html] and the decisions of Trip.com. If you have any questions, please contact Trip.com's customer service department before participating. Once you participate, it is considered that you have fully accepted and will adhere to the event terms.
+2. During the promotion period, Trip.com members can sign into Trip.com, go to Trip.com campaign page, and participate in the promotion gameplay including "Redeem Travel Products with Trip Coins" and "Book Hotles/Flights to Earn Trip Coins Rebate".
+3. All information, including personal information ("Information") submitted or known to Trip.com and/or its affiliates in connection with this promotion will only be used for the purposes set out in and treated in accordance with these Terms & Conditions and those stipulated in Trip.com's Privacy Policy at https://pages.trip.com/service-guideline/privacy-policy-en-sg.html ("Privacy Policy").
+4. Trip.com reserves the right to suspend, terminate, change or otherwise restrict the participation of campaign mechanism any time without prior notice or compensation if we have reason to believe that the participant is detected with unlawful, fraudulent, unauthorized, or improperly behavior, including, but not limited to, placing malicious orders, malicious registrations, exploiting bugs in the Program, unlawfully changing prices, using plug-ins, extranets, reverse orders, fraudulent transactions, or any other violation of the campaign rules, or any other violation of the fairness and principles of the campaign. In case of any dispute, Trip.com reserves the right of final interpretation and decision. The promotion is non-transferable unless otherwise stated. If a user cancels or refunds a booking, the rewards obtained will be deducted or invalidated.
+5. To the fullest extent permitted by law, Trip.com and its respective subsidiaries, affiliates and associated companies/entities and agencies shall not be liable for any incidental, punitive, consequential, special, or indirect damages, loss of profits, loss of business, loss of business opportunity, economic loss, injury (including but not limited to death and personal injury), damage to property or other damages suffered or incurred by the participant arising out of or in connection with this promotion.
+6. Trip.com will not be liable for any default due to any act of God, war, riots, strikes, lockouts, industrial action, fires, flooding, droughts, storms, epidemics, pandemics, sudden blackouts, government actions, cyber-attacks, technical or system failures or any event beyond the reasonable control of Trip.com.
+7. Trip.com reserves the right to disqualify any participant who wins a prize in this campaign through unfair behavior, including but not limited to falsifying booking orders.
+8. Trip.com's decision on all matters relating to this promotion and the Trip.com Campaign will be final and binding.
+9. Trip.com reserves the right to vary these terms and conditions and/or terminate or otherwise amend this promotion without prior notice, at its sole and absolute discretion. However, Trip.com will endeavor to notify you of any such variation, change, cancellation, termination, withdrawal or suspension by posting on Trip.com or in any other manner Trip.com deems fit.
+10. Any terms and conditions applicable to this promotion which are illegal, prohibited or unenforceable under any law or regulation shall be ineffective without invalidating the remaining provisions.
+11. Trip.com reserves all rights of final interpretation of this promotion.
+12. The Terms &Conditions of this promotion shall be governed by and construed in accordance with the laws of the Republic of Singapore. All disputes arising out of these Terms and Conditions and/or this Global Travel Recovery Program shall be governed by a competent court in Singapore.`;
+
+            return section3;
+        }
+
+        function generateTerms() {
+            const section1 = generateSection1();
+            const section2 = generateSection2();
+            const section3 = generateSection3();
+
+            currentTerms.section1 = section1;
+            currentTerms.section2 = section2;
+            currentTerms.section3 = section3;
+            currentTerms.all = section1 + '\n\n' + section2 + '\n\n' + section3;
+
+            displayTerms(currentTerms.all);
+        }
+
+        function displayTerms(text) {
+            const output = document.getElementById('outputArea');
+            output.className = 'output-area';
+            output.textContent = text;
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'all') {
+                displayTerms(currentTerms.all || 'Generate terms first');
+            } else if (tab === 'section1') {
+                displayTerms(currentTerms.section1 || 'Generate terms first');
+            } else if (tab === 'section2') {
+                displayTerms(currentTerms.section2 || 'Generate terms first');
+            } else if (tab === 'section3') {
+                displayTerms(currentTerms.section3 || 'Generate terms first');
+            }
+        }
+
+        function addNumbering(text) {
+            // 原文本已经包含了正确的序号，直接返回
+            return text;
+        }
+
+        function copyToClipboard(text) {
+            // 将换行符转换为<br>
+            const formattedText = text.split('\n').join('<br>');
+
+            const textarea = document.createElement('textarea');
+            textarea.value = formattedText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            const notify = document.createElement('div');
+            notify.className = 'copy-notification';
+            notify.textContent = '✓ Copied to clipboard';
+            document.body.appendChild(notify);
+            setTimeout(() => notify.remove(), 2000);
+        }
+
+        function copyAllTerms() {
+            const numbered = addNumbering(currentTerms.all);
+            copyToClipboard(numbered);
+        }
+
+        function copySection1() {
+            const numbered = addNumbering(currentTerms.section1);
+            copyToClipboard(numbered);
+        }
+
+        function copySection2() {
+            const numbered = addNumbering(currentTerms.section2);
+            copyToClipboard(numbered);
+        }
+
+        function copySection3() {
+            const numbered = addNumbering(currentTerms.section3);
+            copyToClipboard(numbered);
+        }
+
+        function clearOutput() {
+            document.getElementById('outputArea').innerHTML = 'Click "Generate Terms" to create your conditions';
+            document.getElementById('outputArea').className = 'output-area empty';
+        }
+
+        // Auto-generate on load
+        window.addEventListener('load', generateTerms);
+
+        // Auto-regenerate on input change
+        document.addEventListener('change', generateTerms);
+        document.addEventListener('input', generateTerms);
+    </script>
+</body>
+</html>
